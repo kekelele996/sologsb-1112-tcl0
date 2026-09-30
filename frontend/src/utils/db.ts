@@ -3,18 +3,20 @@ import type { RingRecord } from '../types/ring-record';
 import type { Morphometrics } from '../types/morphometrics';
 import type { BirdSite } from '../types/bird-site';
 import type { SurveySession } from '../types/session';
+import type { RecoveryReport } from '../types/recovery';
 
 /** IndexedDB 库名（浏览器本地存储，无后端） */
 export const DB_NAME = 'gbbirdring-db';
 
 /** 当前 schema 版本，与 db.version(n) 对应 */
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
 class BirdRingDB extends Dexie {
   rings!: Table<RingRecord, string>;
   morphs!: Table<Morphometrics, string>;
   sites!: Table<BirdSite, string>;
   sessions!: Table<SurveySession, string>;
+  reports!: Table<RecoveryReport, string>;
   meta!: Table<{ key: string; value: string }, string>;
 
   constructor() {
@@ -49,6 +51,17 @@ class BirdRingDB extends Dexie {
             }
           });
       });
+
+    // v3：新增回捕通报表 reports；环志表增加 reportId 索引，便于通报与回收记录双向对账。
+    // 升级前请在顶栏「导出备份」导出 JSON。
+    this.version(3).stores({
+      rings: 'id, ringNo, speciesCn, status, ringDate, siteId, sessionId, reportId, [speciesCn+ringDate]',
+      morphs: 'id, ringId, measuredAt',
+      sites: 'id, siteNo, habitat, name',
+      sessions: 'id, sessionNo, date, siteId, closed',
+      reports: 'id, ringNo, status, sourceHash, importedAt',
+      meta: 'key',
+    });
   }
 }
 

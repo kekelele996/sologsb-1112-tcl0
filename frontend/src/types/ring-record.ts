@@ -33,6 +33,10 @@ export interface RingRecord {
   sessionId: string;
   /** 备注 */
   remark?: string;
+  /** 回收记录专用：回捕通报的上报站点（仅 status=回收） */
+  reportSite?: string;
+  /** 回收记录专用：来源回捕通报条目 id（仅 status=回收） */
+  reportId?: string;
 }
 
 /** 金属环号格式：一般为「环前缀-序号」，如 A-12345 */

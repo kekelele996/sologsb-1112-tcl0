@@ -6,6 +6,7 @@ import FilterBar from '../components/common/FilterBar.vue';
 import EmptyPanel from '../components/common/EmptyPanel.vue';
 import RingCodeInput from '../components/common/RingCodeInput.vue';
 import SpeciesPicker from '../components/common/SpeciesPicker.vue';
+import ReportPanel from '../components/common/ReportPanel.vue';
 import { useRingStore } from '../stores/ringStore';
 import { useSiteStore } from '../stores/siteStore';
 import { useSessionStore } from '../stores/sessionStore';
@@ -187,7 +188,7 @@ const historyRows = computed(() => ringStore.historyOf(historyRingNo.value));
 <template>
   <div>
     <h2 class="page-title">环志记录录入与检索</h2>
-    <p class="page-desc">金属环号 + 彩环组合双段录入，自动查重；环号重复时提示已存在并跳转该环号历史记录。</p>
+    <p class="page-desc">金属环号 + 彩环组合双段录入，自动查重；环号重复时提示已存在并跳转该环号历史记录。支持粘贴上级中心回捕通报，按金属环号与本地初捕记录自动对账挂接收回。</p>
 
     <div class="toolbar">
       <el-button type="primary" @click="openCreate">登记环志记录</el-button>
@@ -206,6 +207,8 @@ const historyRows = computed(() => ringStore.historyOf(historyRingNo.value));
       :result-count="visible.length"
       :total-count="ringStore.rings.length"
     />
+
+    <ReportPanel @view-history="showHistory" />
 
     <EmptyPanel v-if="visible.length === 0" description="没有符合条件的环志记录" action-text="登记环志记录" @action="openCreate" />
 
@@ -227,6 +230,9 @@ const historyRows = computed(() => ringStore.historyOf(historyRingNo.value));
           </template>
         </el-table-column>
         <el-table-column prop="ringer" label="环志人" width="90" />
+        <el-table-column label="回收上报站点" width="150" show-overflow-tooltip>
+          <template #default="scope">{{ scope.row.status === '回收' ? scope.row.reportSite || '回捕通报' : '—' }}</template>
+        </el-table-column>
         <el-table-column label="鸟点" width="140">
           <template #default="scope">{{ siteStore.siteName(scope.row.siteId) }}</template>
         </el-table-column>
@@ -314,6 +320,9 @@ const historyRows = computed(() => ringStore.historyOf(historyRingNo.value));
           <template #default="scope">{{ formatDate(scope.row.ringDate) }}</template>
         </el-table-column>
         <el-table-column prop="status" label="状态" width="90" />
+        <el-table-column label="上报站点" width="140" show-overflow-tooltip>
+          <template #default="scope">{{ scope.row.status === '回收' ? scope.row.reportSite || '回捕通报' : '—' }}</template>
+        </el-table-column>
         <el-table-column prop="netNo" label="网号" width="100" />
         <el-table-column prop="ringer" label="环志人" width="90" />
         <el-table-column prop="remark" label="备注" show-overflow-tooltip />
