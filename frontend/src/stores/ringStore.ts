@@ -43,6 +43,16 @@ export const useRingStore = defineStore('ring', {
           .filter((record) => record.ringNo.toLowerCase() === ringNo.trim().toLowerCase())
           .sort((a, b) => a.ringDate.localeCompare(b.ringDate));
     },
+    /** 同一环号的初捕记录（最早一条 status=初捕）；无则 undefined */
+    firstCaptureOf(state) {
+      return (ringNo: string): RingRecord | undefined =>
+        state.rings
+          .filter(
+            (record) =>
+              record.status === '初捕' && record.ringNo.toLowerCase() === ringNo.trim().toLowerCase(),
+          )
+          .sort((a, b) => a.ringDate.localeCompare(b.ringDate))[0];
+    },
     duplicate(state): RingRecord | undefined {
       return state.rings.find((record) => record.id === state.duplicateId);
     },

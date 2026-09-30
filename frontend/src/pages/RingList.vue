@@ -6,6 +6,7 @@ import FilterBar from '../components/common/FilterBar.vue';
 import EmptyPanel from '../components/common/EmptyPanel.vue';
 import RingCodeInput from '../components/common/RingCodeInput.vue';
 import SpeciesPicker from '../components/common/SpeciesPicker.vue';
+import RecoveryBoard from '../components/RecoveryBoard.vue';
 import { useRingStore } from '../stores/ringStore';
 import { useSiteStore } from '../stores/siteStore';
 import { useSessionStore } from '../stores/sessionStore';
@@ -239,6 +240,8 @@ const historyRows = computed(() => ringStore.historyOf(historyRingNo.value));
         </el-table-column>
       </el-table>
     </el-card>
+
+    <RecoveryBoard />
 
     <el-dialog v-model="dialogVisible" :title="editingId ? '编辑环志记录' : '登记环志记录'" width="760px">
       <RingCodeInput
